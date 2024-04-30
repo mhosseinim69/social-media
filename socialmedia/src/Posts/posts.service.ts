@@ -18,7 +18,7 @@ export class PostsService {
                 description: data.description,
                 article,
                 tags: data.tags,
-                totalViews
+                totalViews,
             }
         });
     }
@@ -35,7 +35,7 @@ export class PostsService {
                 description: data.description,
                 article,
                 tags: data.tags,
-                totalViews
+                totalViews,
             }
         });
     }
@@ -47,7 +47,7 @@ export class PostsService {
     }
 
 
-    async getPostById(id: number): Promise<Posts> {
+    async getPostById(id: number): Promise<any> {
 
         const idToGet = Number(id);
 
@@ -55,11 +55,22 @@ export class PostsService {
             where: {
                 id: idToGet,
             },
+            include: {
+                comments: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
         });
+
+
 
         if (!post) {
             throw new NotFoundException(`Post with ID ${id} not found`);
         }
+
+        const totalComments = post.comments.length;
 
         const postWithTotalViews = await this.prisma.post.update({
             where: { id: idToGet },
@@ -69,7 +80,7 @@ export class PostsService {
             data: { totalViews: post.totalViews + 1 },
         });
 
-        return postWithTotalViews
+        return { ...postWithTotalViews, totalComments };
     }
 
 
