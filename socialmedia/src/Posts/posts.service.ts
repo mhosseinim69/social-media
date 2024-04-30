@@ -63,6 +63,9 @@ export class PostsService {
 
         const postWithTotalViews = await this.prisma.post.update({
             where: { id: idToGet },
+            include: {
+                comments: true
+            },
             data: { totalViews: post.totalViews + 1 },
         });
 
