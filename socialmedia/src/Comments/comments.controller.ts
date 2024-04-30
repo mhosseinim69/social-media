@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Delete, Body, Param, Req, Res, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
-import { PostsService } from "./posts.service";
+import { CommentsService } from "./comments.service";
 import { Request, Response } from 'express'
-import { CreatePostDto } from "./dto/create.post.dto";
-import { UpdatePostDto } from "./dto/update.post.dto";
+import { CreateCommentDto } from "./dto/create.comment.dto";
+import { UpdateCommentDto } from "./dto/update.comment.dto";
 import { JwtAuthGuard } from "../authentication/auth.guard";
 import {
     ApiBearerAuth,
@@ -14,32 +14,32 @@ import {
 } from '@nestjs/swagger';
 
 
-@ApiTags('posts')
-@Controller('posts')
+@ApiTags('comments')
+@Controller('comments')
 
 
-export class PostsController {
-    constructor(private readonly postService: PostsService) { }
+export class CommentsController {
+    constructor(private readonly commentService: CommentsService) { }
 
 
-    @ApiCreatedResponse({ description: "Post was created" })
+    @ApiCreatedResponse({ description: "Comment was created" })
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiBearerAuth('access-token')
     @ApiBody({
-        type: CreatePostDto,
+        type: CreateCommentDto,
     })
     @Post()
     @UseGuards(JwtAuthGuard)
 
-    async createPost(@Body() createPostDto: CreatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
+    async createComment(@Body() createCommentDto: CreateCommentDto, @Res() response: Response, @Req() request: Request): Promise<any> {
         try {
 
-            const article = request.user['id'];
-            const newPost = await this.postService.createPost(createPostDto, article);
+            const user = request.user['username'];
+            const newComment = await this.commentService.createComment(createCommentDto, user);
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
-                message: 'Post created successfully!',
-                result: newPost
+                message: 'Comment created successfully!',
+                result: newComment
             });
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -50,25 +50,25 @@ export class PostsController {
         }
     }
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    @ApiOkResponse({ description: "Post was updated" })
+    @ApiOkResponse({ description: "Comment was updated" })
     @ApiBearerAuth('access-token')
     @ApiBody({
-        type: UpdatePostDto,
+        type: UpdateCommentDto,
     })
 
     @Put(':id')
     @UseGuards(JwtAuthGuard)
-    async updatePost(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
+    async updateComment(@Param('id') id: number, @Body() updateCommentDto: UpdateCommentDto, @Res() response: Response, @Req() request: Request): Promise<any> {
         try {
-            const article = request.user['id'];
-            const updatedPost = await this.postService.updatePost(id, updatePostDto, article);
-            if (!updatedPost) {
-                throw new NotFoundException(`Post with ID ${id} not found`);
+            const user = request.user['username'];
+            const updatedComment = await this.commentService.updateComment(id, updateCommentDto, user);
+            if (!updatedComment) {
+                throw new NotFoundException(`Comment with ID ${id} not found`);
             }
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Post updated successfully!',
-                result: updatedPost
+                result: updatedComment
             });
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -83,14 +83,14 @@ export class PostsController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    @ApiOkResponse({ description: "Get all posts" })
-    async getAllPosts(@Req() request: Request, @Res() response: Response): Promise<any> {
+    @ApiOkResponse({ description: "Get all comments" })
+    async getAllComments(@Req() request: Request, @Res() response: Response): Promise<any> {
         try {
-            const posts = await this.postService.getAllPosts();
+            const comments = await this.commentService.getAllComments();
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Successfully fetch data!',
-                result: posts
+                result: comments
             })
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -105,17 +105,17 @@ export class PostsController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    @ApiOkResponse({ description: "Get post" })
-    async getPostById(@Param('id') id: number, @Res() response: Response): Promise<any> {
+    @ApiOkResponse({ description: "Get comment" })
+    async getCommentById(@Param('id') id: number, @Res() response: Response): Promise<any> {
         try {
-            const post = await this.postService.getPostById(id);
-            if (!post) {
-                throw new NotFoundException(`Post with ID ${id} not found`);
+            const comment = await this.commentService.getCommentById(id);
+            if (!comment) {
+                throw new NotFoundException(`Comment with ID ${id} not found`);
             }
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Successfully fetch post!',
-                result: post
+                result: comment
             });
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -131,17 +131,17 @@ export class PostsController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    @ApiOkResponse({ description: "Post was deleted" })
-    async deletePost(@Param('id') id: number, @Res() response: Response): Promise<any> {
+    @ApiOkResponse({ description: "Comment was deleted" })
+    async deleteComment(@Param('id') id: number, @Res() response: Response): Promise<any> {
         try {
-            const deletedPost = await this.postService.deletePost(id);
-            if (!deletedPost) {
-                throw new NotFoundException(`Post with ID ${id} not found`);
+            const deletedComment = await this.commentService.deleteComment(id);
+            if (!deletedComment) {
+                throw new NotFoundException(`Comment with ID ${id} not found`);
             }
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Post deleted successfully!',
-                result: deletedPost
+                result: deletedComment
             });
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

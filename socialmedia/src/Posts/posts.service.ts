@@ -11,7 +11,7 @@ export class PostsService {
     constructor(private prisma: PrismaService) { }
 
     async createPost(data: Posts, article: number): Promise<Posts> {
-        return this.prisma.posts.create({
+        return this.prisma.post.create({
             data: {
                 title: data.title,
                 description: data.description,
@@ -26,7 +26,7 @@ export class PostsService {
 
         const idToUpdate = Number(id);
 
-        return this.prisma.posts.update({
+        return this.prisma.post.update({
             where: { id: idToUpdate },
             data: {
                 title: data.title,
@@ -38,16 +38,16 @@ export class PostsService {
     }
 
 
-    async getAllPost(): Promise<Posts[]> {
+    async getAllPosts(): Promise<Posts[]> {
 
-        return this.prisma.posts.findMany()
+        return this.prisma.post.findMany()
     }
 
 
     async getPostById(id: number): Promise<Posts> {
         const idToGet = Number(id);
 
-        return this.prisma.posts.findUnique({
+        return this.prisma.post.findUnique({
             where: {
                 id: idToGet
             }
@@ -57,7 +57,7 @@ export class PostsService {
 
     async deletePost(id: number): Promise<any> {
         const idToGet = Number(id);
-        return this.prisma.posts.delete({
+        return this.prisma.post.delete({
             where: {
                 id: idToGet
             }

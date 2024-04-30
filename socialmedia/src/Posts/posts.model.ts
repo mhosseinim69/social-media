@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export class Posts implements Prisma.PostsCreateInput {
+export class Posts implements Prisma.PostCreateInput {
     title: string
     description: string
     article: number

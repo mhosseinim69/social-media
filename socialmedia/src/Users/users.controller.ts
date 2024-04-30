@@ -23,7 +23,7 @@ export class UsersController {
 
     async getAllUsers(@Req() request: Request, @Res() response: Response): Promise<any> {
         try {
-            const result = await this.userService.getAllUser();
+            const result = await this.userService.getAllUsers();
             return response.status(200).json({
                 status: 'Ok!',
                 message: 'Successfully fetch data!',
