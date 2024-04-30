@@ -50,7 +50,10 @@ export class AuthService {
         const user = await this.usersService.createUser(createUser);
 
         return {
-            token: this.jwtService.sign({ username: user.username }),
+            token: this.jwtService.sign({
+                username: user.username,
+                userId: user.id
+            }),
         };
     }
 
