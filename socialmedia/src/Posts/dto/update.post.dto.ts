@@ -28,6 +28,7 @@ export class UpdatePostDto {
     tags: string;
 
 
-    article: number
+    article: number;
+    totalViews: number;
 
 }

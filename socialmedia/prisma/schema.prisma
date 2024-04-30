@@ -28,7 +28,8 @@ model Post {
   title        String 
   description  String 
   article      Int @unique
-  tags         String? 
+  tags         String?
+  totalViews   Int  
   comments     Comment[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

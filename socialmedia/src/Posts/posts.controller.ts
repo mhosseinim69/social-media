@@ -35,7 +35,8 @@ export class PostsController {
         try {
 
             const article = request.user['id'];
-            const newPost = await this.postService.createPost(createPostDto, article);
+            const tatalViews = 0
+            const newPost = await this.postService.createPost(createPostDto, article, tatalViews);
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
                 message: 'Post created successfully!',
@@ -61,7 +62,8 @@ export class PostsController {
     async updatePost(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
         try {
             const article = request.user['id'];
-            const updatedPost = await this.postService.updatePost(id, updatePostDto, article);
+            const tatalViews = 0
+            const updatedPost = await this.postService.updatePost(id, updatePostDto, article, tatalViews);
             if (!updatedPost) {
                 throw new NotFoundException(`Post with ID ${id} not found`);
             }
@@ -109,9 +111,7 @@ export class PostsController {
     async getPostById(@Param('id') id: number, @Res() response: Response): Promise<any> {
         try {
             const post = await this.postService.getPostById(id);
-            if (!post) {
-                throw new NotFoundException(`Post with ID ${id} not found`);
-            }
+
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Successfully fetch post!',

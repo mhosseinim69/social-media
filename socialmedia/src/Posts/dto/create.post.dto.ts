@@ -29,5 +29,6 @@ export class CreatePostDto {
 
 
     article: number;
+    totalViews: number;
 
 }

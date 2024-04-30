@@ -16,6 +16,7 @@ CREATE TABLE "posts" (
     "description" TEXT NOT NULL,
     "article" INTEGER NOT NULL,
     "tags" TEXT,
+    "totalViews" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -25,7 +26,7 @@ CREATE TABLE "posts" (
 -- CreateTable
 CREATE TABLE "comments" (
     "id" SERIAL NOT NULL,
-    "user" INTEGER NOT NULL,
+    "user" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -42,9 +43,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "posts_article_key" ON "posts"("article");
-
--- CreateIndex
-CREATE UNIQUE INDEX "comments_user_key" ON "comments"("user");
 
 -- AddForeignKey
 ALTER TABLE "comments" ADD CONSTRAINT "comments_postId_fkey" FOREIGN KEY ("postId") REFERENCES "posts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
