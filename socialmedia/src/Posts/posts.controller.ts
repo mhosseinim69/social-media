@@ -49,105 +49,106 @@ export class PostsController {
             });
         }
     }
-    // @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    // @ApiOkResponse({ description: "Category was updated" })
-    // @ApiBearerAuth('access-token')
-    // @ApiBody({
-    //     type: UpdateCategoryDto,
-    // })
+    @ApiUnauthorizedResponse({ description: "invalid credentials" })
+    @ApiOkResponse({ description: "Post was updated" })
+    @ApiBearerAuth('access-token')
+    @ApiBody({
+        type: UpdatePostDto,
+    })
 
-    // @Put(':id')
-    // @UseGuards(JwtAuthGuard)
-    // async updateCategory(@Param('id') id: number, @Body() updateCategoryDto: UpdateCategoryDto, @Res() response: Response): Promise<any> {
-    //     try {
-    //         const updatedCategory = await this.categoryService.updateCategory(id, updateCategoryDto);
-    //         if (!updatedCategory) {
-    //             throw new NotFoundException(`Category with ID ${id} not found`);
-    //         }
-    //         return response.status(HttpStatus.OK).json({
-    //             status: 'Ok!',
-    //             message: 'Category updated successfully!',
-    //             result: updatedCategory
-    //         });
-    //     } catch (err) {
-    //         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    //             status: 'Error',
-    //             message: 'Internal Server Error!',
-    //             error: err.message
-    //         });
-    //     }
-    // }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    async updatePost(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
+        try {
+            const article = request.user['id'];
+            const updatedPost = await this.postService.updatePost(id, updatePostDto, article);
+            if (!updatedPost) {
+                throw new NotFoundException(`Post with ID ${id} not found`);
+            }
+            return response.status(HttpStatus.OK).json({
+                status: 'Ok!',
+                message: 'Post updated successfully!',
+                result: updatedPost
+            });
+        } catch (err) {
+            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: 'Error',
+                message: 'Internal Server Error!',
+                error: err.message
+            });
+        }
+    }
 
-    // @Get()
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth('access-token')
-    // @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    // @ApiOkResponse({ description: "Get all users" })
-    // async getAllUsers(@Req() request: Request, @Res() response: Response): Promise<any> {
-    //     try {
-    //         const result = await this.categoryService.getAllCategory();
-    //         return response.status(HttpStatus.OK).json({
-    //             status: 'Ok!',
-    //             message: 'Successfully fetch data!',
-    //             result: result
-    //         })
-    //     } catch (err) {
-    //         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    //             status: 'Ok!',
-    //             message: 'Internal Server Error!'
-    //         })
-    //     }
-    // }
-
-
-    // @Get(':id')
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth('access-token')
-    // @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    // @ApiOkResponse({ description: "Get user" })
-    // async getCategoryById(@Param('id') id: number, @Res() response: Response): Promise<any> {
-    //     try {
-    //         const category = await this.categoryService.getCategoryById(id);
-    //         if (!category) {
-    //             throw new NotFoundException(`Category with ID ${id} not found`);
-    //         }
-    //         return response.status(HttpStatus.OK).json({
-    //             status: 'Ok!',
-    //             message: 'Successfully fetch category!',
-    //             result: category
-    //         });
-    //     } catch (err) {
-    //         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    //             status: 'Error',
-    //             message: 'Internal Server Error!',
-    //             error: err.message
-    //         });
-    //     }
-    // }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @ApiUnauthorizedResponse({ description: "invalid credentials" })
+    @ApiOkResponse({ description: "Get all posts" })
+    async getAllPosts(@Req() request: Request, @Res() response: Response): Promise<any> {
+        try {
+            const posts = await this.postService.getAllPost();
+            return response.status(HttpStatus.OK).json({
+                status: 'Ok!',
+                message: 'Successfully fetch data!',
+                result: posts
+            })
+        } catch (err) {
+            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: 'Ok!',
+                message: 'Internal Server Error!'
+            })
+        }
+    }
 
 
-    // @Delete(':id')
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth('access-token')
-    // @ApiUnauthorizedResponse({ description: "invalid credentials" })
-    // @ApiOkResponse({ description: "User was deleted" })
-    // async deleteCategory(@Param('id') id: number, @Res() response: Response): Promise<any> {
-    //     try {
-    //         const deletedCategory = await this.categoryService.deleteCategory(id);
-    //         if (!deletedCategory) {
-    //             throw new NotFoundException(`Category with ID ${id} not found`);
-    //         }
-    //         return response.status(HttpStatus.OK).json({
-    //             status: 'Ok!',
-    //             message: 'Category deleted successfully!',
-    //             result: deletedCategory
-    //         });
-    //     } catch (err) {
-    //         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    //             status: 'Error',
-    //             message: 'Internal Server Error!',
-    //             error: err.message
-    //         });
-    //     }
-    // }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @ApiUnauthorizedResponse({ description: "invalid credentials" })
+    @ApiOkResponse({ description: "Get post" })
+    async getPostById(@Param('id') id: number, @Res() response: Response): Promise<any> {
+        try {
+            const post = await this.postService.getPostById(id);
+            if (!post) {
+                throw new NotFoundException(`Post with ID ${id} not found`);
+            }
+            return response.status(HttpStatus.OK).json({
+                status: 'Ok!',
+                message: 'Successfully fetch post!',
+                result: post
+            });
+        } catch (err) {
+            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: 'Error',
+                message: 'Internal Server Error!',
+                error: err.message
+            });
+        }
+    }
+
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @ApiUnauthorizedResponse({ description: "invalid credentials" })
+    @ApiOkResponse({ description: "Post was deleted" })
+    async deletePost(@Param('id') id: number, @Res() response: Response): Promise<any> {
+        try {
+            const deletedPost = await this.postService.deletePost(id);
+            if (!deletedPost) {
+                throw new NotFoundException(`Post with ID ${id} not found`);
+            }
+            return response.status(HttpStatus.OK).json({
+                status: 'Ok!',
+                message: 'Post deleted successfully!',
+                result: deletedPost
+            });
+        } catch (err) {
+            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: 'Error',
+                message: 'Internal Server Error!',
+                error: err.message
+            });
+        }
+    }
 }

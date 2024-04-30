@@ -27,4 +27,7 @@ export class UpdatePostDto {
     @IsString()
     tags: string;
 
+
+    article: number
+
 }

@@ -22,71 +22,45 @@ export class PostsService {
     }
 
 
-    // async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Categories> {
+    async updatePost(id: number, data: Posts, article: number): Promise<Posts> {
 
-    //     const idToUpdate = Number(id);
+        const idToUpdate = Number(id);
 
-    //     const category = await this.prisma.categories.findUnique({
-    //         where: {
-    //             id: idToUpdate
-    //         }
-    //     })
-
-    //     const updatedData: Partial<Categories> = {};
-
-    //     if (updateCategoryDto.name !== undefined) {
-    //         updatedData.name = updateCategoryDto.name;
-    //     }
-    //     if (updateCategoryDto.score !== undefined) {
-    //         updatedData.score = updateCategoryDto.score;
-    //     }
-
-    //     if (updateCategoryDto.action) {
-    //         updatedData.name = category.name
-    //         switch (updateCategoryDto.action) {
-
-    //             case "increment":
-    //                 updatedData.score = category.score + 1;
-    //                 break;
-    //             case "decrement":
-    //                 updatedData.score = category.score - 1;
-    //                 break;
-    //             default:
-    //                 break;
-
-    //         }
-    //     }
-
-    //     return this.prisma.categories.update({
-    //         where: { id: idToUpdate },
-    //         data: updatedData
-    //     });
-    // }
+        return this.prisma.posts.update({
+            where: { id: idToUpdate },
+            data: {
+                title: data.title,
+                description: data.description,
+                article,
+                tags: data.tags
+            }
+        });
+    }
 
 
-    // async getAllCategory(): Promise<Categories[]> {
+    async getAllPost(): Promise<Posts[]> {
 
-    //     return this.prisma.categories.findMany()
-    // }
-
-
-    // async getCategoryById(id: number): Promise<Categories> {
-    //     const idToGet = Number(id);
-
-    //     return this.prisma.categories.findUnique({
-    //         where: {
-    //             id: idToGet
-    //         }
-    //     })
-    // }
+        return this.prisma.posts.findMany()
+    }
 
 
-    // async deleteCategory(id: number): Promise<any> {
-    //     const idToGet = Number(id);
-    //     return this.prisma.categories.delete({
-    //         where: {
-    //             id: idToGet
-    //         }
-    //     })
-    // }
+    async getPostById(id: number): Promise<Posts> {
+        const idToGet = Number(id);
+
+        return this.prisma.posts.findUnique({
+            where: {
+                id: idToGet
+            }
+        })
+    }
+
+
+    async deletePost(id: number): Promise<any> {
+        const idToGet = Number(id);
+        return this.prisma.posts.delete({
+            where: {
+                id: idToGet
+            }
+        })
+    }
 }
