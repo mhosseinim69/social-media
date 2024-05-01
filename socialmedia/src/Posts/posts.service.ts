@@ -11,20 +11,21 @@ export class PostsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createPost(data: Posts, article: number, totalViews: number): Promise<Posts> {
+    async createPost(data: Posts, author: number, totalViews: number): Promise<Posts> {
         return this.prisma.post.create({
             data: {
                 title: data.title,
                 description: data.description,
-                article,
+                author,
                 tags: data.tags,
+                article: data.article,
                 totalViews,
             }
         });
     }
 
 
-    async updatePost(id: number, data: Posts, article: number, totalViews: number): Promise<Posts> {
+    async updatePost(id: number, data: Posts, author: number, totalViews: number): Promise<Posts> {
 
         const idToUpdate = Number(id);
 
@@ -33,8 +34,9 @@ export class PostsService {
             data: {
                 title: data.title,
                 description: data.description,
-                article,
+                author,
                 tags: data.tags,
+                article: data.article,
                 totalViews,
             }
         });

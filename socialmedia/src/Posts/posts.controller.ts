@@ -34,9 +34,9 @@ export class PostsController {
     async createPost(@Body() createPostDto: CreatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
         try {
 
-            const article = request.user['id'];
+            const author = request.user['id'];
             const tatalViews = 0
-            const newPost = await this.postService.createPost(createPostDto, article, tatalViews);
+            const newPost = await this.postService.createPost(createPostDto, author, tatalViews);
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
                 message: 'Post created successfully!',
@@ -61,9 +61,9 @@ export class PostsController {
     @UseGuards(JwtAuthGuard)
     async updatePost(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
         try {
-            const article = request.user['id'];
+            const author = request.user['id'];
             const tatalViews = 0
-            const updatedPost = await this.postService.updatePost(id, updatePostDto, article, tatalViews);
+            const updatedPost = await this.postService.updatePost(id, updatePostDto, author, tatalViews);
             if (!updatedPost) {
                 throw new NotFoundException(`Post with ID ${id} not found`);
             }

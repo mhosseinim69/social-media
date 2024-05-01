@@ -26,8 +26,9 @@ model User {
 model Post {
   id           Int @id @default(autoincrement())
   title        String 
-  description  String 
-  article      Int @unique
+  description  String
+  author       Int 
+  article      String? 
   tags         String?
   totalViews   Int  
   comments     Comment[]

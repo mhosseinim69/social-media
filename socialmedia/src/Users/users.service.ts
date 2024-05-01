@@ -28,4 +28,15 @@ export class UsersService {
             data,
         });
     }
+
+
+    async getUserById(id: number): Promise<Users> {
+        const idToGet = Number(id);
+
+        return this.prisma.user.findUnique({
+            where: {
+                id: idToGet
+            }
+        })
+    }
 }

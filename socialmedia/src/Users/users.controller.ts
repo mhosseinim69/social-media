@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Req, Res, UseGuards, HttpStatus } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { Request, Response } from 'express'
 import { JwtAuthGuard } from "../authentication/auth.guard";
@@ -36,4 +36,31 @@ export class UsersController {
             })
         }
     }
+
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @ApiUnauthorizedResponse({ description: "invalid credentials" })
+    @ApiOkResponse({ description: "Get user" })
+    async getUserById(@Param('id') id: number, @Res() response: Response): Promise<any> {
+        try {
+            const user = await this.userService.getUserById(id);
+
+            return response.status(HttpStatus.OK).json({
+                status: 'Ok!',
+                message: 'Successfully fetch post!',
+                result: user
+            });
+        } catch (err) {
+            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: 'Error',
+                message: 'Internal Server Error!',
+                error: err.message
+            });
+        }
+    }
+
+
+
 }
