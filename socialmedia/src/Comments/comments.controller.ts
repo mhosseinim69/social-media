@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Req, Res, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
 import { CommentsService } from "./comments.service";
 import { MailService } from "../mail/mail.service";
 import { UsersService } from "../Users/users.service";
@@ -8,6 +8,7 @@ import { Request, Response } from 'express'
 import { CreateCommentDto } from "./dto/create.comment.dto";
 import { UpdateCommentDto } from "./dto/update.comment.dto";
 import { JwtAuthGuard } from "../authentication/auth.guard";
+import { PaginationDto } from '../Comments/dto/pagination.dto';
 import {
     ApiBearerAuth,
     ApiBody,
@@ -61,8 +62,6 @@ export class CommentsController {
 
             await this.producerService.addToEmailQueue(emailData);
 
-            // await this.mailService.sendMail(to, 'New Comment Notification', message);
-
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
                 message: 'Comment created successfully!',
@@ -111,9 +110,9 @@ export class CommentsController {
     @ApiBearerAuth('access-token')
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Get all comments" })
-    async getAllComments(@Req() request: Request, @Res() response: Response): Promise<any> {
+    async getAllComments(@Req() request: Request, @Res() response: Response, @Query() paginationDto: PaginationDto): Promise<any> {
         try {
-            const comments = await this.commentService.getAllComments();
+            const comments = await this.commentService.getAllComments(paginationDto);
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Successfully fetch data!',
@@ -122,8 +121,9 @@ export class CommentsController {
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 status: 'Ok!',
-                message: 'Internal Server Error!'
-            })
+                message: 'Internal Server Error!',
+                error: err.message
+            });
         }
     }
 

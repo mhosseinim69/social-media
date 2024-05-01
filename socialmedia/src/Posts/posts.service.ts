@@ -3,7 +3,7 @@ import { Posts } from "./posts.model";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { UpdatePostDto } from "./dto/update.post.dto"
 import { NotFoundException } from "@nestjs/common";
-
+import { PaginationDto } from '../Posts/dto/pagination.dto';
 
 
 @Injectable()
@@ -43,9 +43,17 @@ export class PostsService {
     }
 
 
-    async getAllPosts(): Promise<Posts[]> {
+    async getAllPosts(paginationDto: PaginationDto): Promise<Posts[]> {
 
-        return this.prisma.post.findMany()
+        const { page = 1, pagesize = 10 } = paginationDto;
+        const skip = (page - 1) * pagesize;
+        const take = Number(pagesize);
+
+        return this.prisma.post.findMany({
+            skip,
+            take,
+            orderBy: { createdAt: 'desc' },
+        })
     }
 
 

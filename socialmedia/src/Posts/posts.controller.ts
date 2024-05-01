@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Delete, Body, Param, Req, Res, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request, Response } from 'express'
 import { CreatePostDto } from "./dto/create.post.dto";
 import { UpdatePostDto } from "./dto/update.post.dto";
 import { JwtAuthGuard } from "../authentication/auth.guard";
+import { PaginationDto } from '../Posts/dto/pagination.dto';
 import {
     ApiBearerAuth,
     ApiBody,
@@ -86,9 +87,9 @@ export class PostsController {
     @ApiBearerAuth('access-token')
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Get all posts" })
-    async getAllPosts(@Req() request: Request, @Res() response: Response): Promise<any> {
+    async getAllPosts(@Req() request: Request, @Res() response: Response, @Query() paginationDto: PaginationDto): Promise<any> {
         try {
-            const posts = await this.postService.getAllPosts();
+            const posts = await this.postService.getAllPosts(paginationDto);
             return response.status(HttpStatus.OK).json({
                 status: 'Ok!',
                 message: 'Successfully fetch data!',
@@ -97,7 +98,8 @@ export class PostsController {
         } catch (err) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 status: 'Ok!',
-                message: 'Internal Server Error!'
+                message: 'Internal Server Error!',
+                error: err.message
             })
         }
     }
