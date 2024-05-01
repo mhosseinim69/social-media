@@ -3,6 +3,7 @@ import { CommentsService } from "./comments.service";
 import { MailService } from "../mail/mail.service";
 import { UsersService } from "../Users/users.service";
 import { PostsService } from "../Posts/posts.service";
+import { ProducerService } from "../queues/producer.service";
 import { Request, Response } from 'express'
 import { CreateCommentDto } from "./dto/create.comment.dto";
 import { UpdateCommentDto } from "./dto/update.comment.dto";
@@ -26,7 +27,8 @@ export class CommentsController {
         private readonly commentService: CommentsService,
         private readonly mailService: MailService,
         private readonly userService: UsersService,
-        private readonly postService: PostsService) { }
+        private readonly postService: PostsService,
+        private producerService: ProducerService) { }
 
 
     @ApiCreatedResponse({ description: "Comment was created" })
@@ -51,8 +53,15 @@ export class CommentsController {
 
             const to = userEmail.email
             const message = `Hello ${userEmail.username}, You have a new comment on your post.`;
+            const emailData = {
+                to,
+                subject: 'New Comment Notification',
+                text: message,
+            };
 
-            await this.mailService.sendMail(to, 'New Comment Notification', message);
+            await this.producerService.addToEmailQueue(emailData);
+
+            // await this.mailService.sendMail(to, 'New Comment Notification', message);
 
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',

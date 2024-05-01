@@ -4,10 +4,10 @@ import { AuthModule } from './authentication/auth.module';
 import { PostsModule } from './Posts/posts.module';
 import { CommentsModule } from './Comments/comments.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-
+import { QueueModule } from './queues/queue.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, PostsModule, CommentsModule, MailerModule.forRoot({
+  imports: [UsersModule, AuthModule, PostsModule, CommentsModule, QueueModule, MailerModule.forRoot({
     transport: {
       host: process.env.EMAIL_HOST,
       port: 587,
