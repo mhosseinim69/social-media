@@ -1,7 +1,6 @@
 import { PrismaService } from "../prisma.service";
 import { Posts } from "./posts.model";
-import { ConflictException, Injectable } from "@nestjs/common";
-import { UpdatePostDto } from "./dto/update.post.dto"
+import { Injectable } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
 import { PaginationDto } from '../Posts/dto/pagination.dto';
 

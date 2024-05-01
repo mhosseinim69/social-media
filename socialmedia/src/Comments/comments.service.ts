@@ -1,7 +1,6 @@
 import { PrismaService } from "../prisma.service";
 import { Comments } from "./comments.model";
-import { ConflictException, Injectable } from "@nestjs/common";
-import { UpdateCommentDto } from "./dto/update.comment.dto"
+import { Injectable } from "@nestjs/common";
 import { PaginationDto } from '../Comments/dto/pagination.dto';
 
 

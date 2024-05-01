@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
 import { CommentsService } from "./comments.service";
-import { MailService } from "../mail/mail.service";
 import { UsersService } from "../Users/users.service";
 import { PostsService } from "../Posts/posts.service";
 import { ProducerService } from "../queues/producer.service";
@@ -26,7 +25,6 @@ import {
 export class CommentsController {
     constructor(
         private readonly commentService: CommentsService,
-        private readonly mailService: MailService,
         private readonly userService: UsersService,
         private readonly postService: PostsService,
         private producerService: ProducerService) { }
