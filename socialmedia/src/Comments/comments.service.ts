@@ -2,7 +2,7 @@ import { PrismaService } from "../prisma.service";
 import { Comments } from "./comments.model";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { UpdateCommentDto } from "./dto/update.comment.dto"
-
+import { PaginationDto } from '../Comments/dto/pagination.dto';
 
 
 @Injectable()
@@ -36,9 +36,17 @@ export class CommentsService {
     }
 
 
-    async getAllComments(): Promise<Comments[]> {
+    async getAllComments(paginationDto: PaginationDto): Promise<Comments[]> {
 
-        return this.prisma.comment.findMany()
+        const { page = 1, pagesize = 10 } = paginationDto;
+        const skip = (page - 1) * pagesize;
+        const take = Number(pagesize);
+
+        return this.prisma.comment.findMany({
+            skip,
+            take,
+            orderBy: { createdAt: 'desc' },
+        })
     }
 
 
