@@ -2,13 +2,14 @@ import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { ConfirmChannel } from 'amqplib';
 import { MailService } from '../mail/mail.service';
+import 'dotenv/config';
 
 @Injectable()
 export class ConsumerService implements OnModuleInit {
     private channelWrapper: ChannelWrapper;
     private readonly logger = new Logger(ConsumerService.name);
     constructor(private mailService: MailService) {
-        const connection = amqp.connect(['amqp://localhost']);
+        const connection = amqp.connect([process.env.RABBITMQ_URI]);
         this.channelWrapper = connection.createChannel();
     }
 

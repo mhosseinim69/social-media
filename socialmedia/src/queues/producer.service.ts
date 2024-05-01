@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { Channel } from 'amqplib';
+import 'dotenv/config';
 
 @Injectable()
 export class ProducerService {
     private channelWrapper: ChannelWrapper;
 
     constructor() {
-        const connection = amqp.connect(['amqp://localhost']);
+        const connection = amqp.connect([process.env.RABBITMQ_URI]);
         this.channelWrapper = connection.createChannel({
             setup: async (channel: Channel) => {
                 await channel.assertQueue('emailQueue', { durable: true });
