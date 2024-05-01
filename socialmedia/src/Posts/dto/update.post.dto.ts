@@ -27,4 +27,16 @@ export class UpdatePostDto {
     @IsString()
     tags: string;
 
+
+    @ApiProperty({
+        example: 'node',
+        required: false
+    })
+    @IsString()
+    article: string;
+
+
+    author: number;
+    totalViews: number;
+
 }

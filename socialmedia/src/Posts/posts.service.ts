@@ -2,6 +2,7 @@ import { PrismaService } from "../prisma.service";
 import { Posts } from "./posts.model";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { UpdatePostDto } from "./dto/update.post.dto"
+import { NotFoundException } from "@nestjs/common";
 
 
 
@@ -10,83 +11,87 @@ export class PostsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createPost(data: Posts, article: number): Promise<Posts> {
-        return this.prisma.posts.create({
+    async createPost(data: Posts, author: number, totalViews: number): Promise<Posts> {
+        return this.prisma.post.create({
             data: {
                 title: data.title,
                 description: data.description,
-                article,
-                tags: data.tags
+                author,
+                tags: data.tags,
+                article: data.article,
+                totalViews,
             }
         });
     }
 
 
-    // async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Categories> {
+    async updatePost(id: number, data: Posts, author: number, totalViews: number): Promise<Posts> {
 
-    //     const idToUpdate = Number(id);
+        const idToUpdate = Number(id);
 
-    //     const category = await this.prisma.categories.findUnique({
-    //         where: {
-    //             id: idToUpdate
-    //         }
-    //     })
-
-    //     const updatedData: Partial<Categories> = {};
-
-    //     if (updateCategoryDto.name !== undefined) {
-    //         updatedData.name = updateCategoryDto.name;
-    //     }
-    //     if (updateCategoryDto.score !== undefined) {
-    //         updatedData.score = updateCategoryDto.score;
-    //     }
-
-    //     if (updateCategoryDto.action) {
-    //         updatedData.name = category.name
-    //         switch (updateCategoryDto.action) {
-
-    //             case "increment":
-    //                 updatedData.score = category.score + 1;
-    //                 break;
-    //             case "decrement":
-    //                 updatedData.score = category.score - 1;
-    //                 break;
-    //             default:
-    //                 break;
-
-    //         }
-    //     }
-
-    //     return this.prisma.categories.update({
-    //         where: { id: idToUpdate },
-    //         data: updatedData
-    //     });
-    // }
+        return this.prisma.post.update({
+            where: { id: idToUpdate },
+            data: {
+                title: data.title,
+                description: data.description,
+                author,
+                tags: data.tags,
+                article: data.article,
+                totalViews,
+            }
+        });
+    }
 
 
-    // async getAllCategory(): Promise<Categories[]> {
+    async getAllPosts(): Promise<Posts[]> {
 
-    //     return this.prisma.categories.findMany()
-    // }
-
-
-    // async getCategoryById(id: number): Promise<Categories> {
-    //     const idToGet = Number(id);
-
-    //     return this.prisma.categories.findUnique({
-    //         where: {
-    //             id: idToGet
-    //         }
-    //     })
-    // }
+        return this.prisma.post.findMany()
+    }
 
 
-    // async deleteCategory(id: number): Promise<any> {
-    //     const idToGet = Number(id);
-    //     return this.prisma.categories.delete({
-    //         where: {
-    //             id: idToGet
-    //         }
-    //     })
-    // }
+    async getPostById(id: number): Promise<any> {
+
+        const idToGet = Number(id);
+
+        const post = await this.prisma.post.findUnique({
+            where: {
+                id: idToGet,
+            },
+            include: {
+                comments: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+
+
+
+        if (!post) {
+            throw new NotFoundException(`Post with ID ${id} not found`);
+        }
+
+        const totalComments = post.comments.length;
+
+        const postWithTotalViews = await this.prisma.post.update({
+            where: { id: idToGet },
+            include: {
+                comments: true
+            },
+            data: { totalViews: post.totalViews + 1 },
+        });
+
+        return { ...postWithTotalViews, totalComments };
+    }
+
+
+    async deletePost(id: number): Promise<any> {
+        const idToGet = Number(id);
+        return this.prisma.post.delete({
+            where: {
+                id: idToGet
+            }
+        })
+    }
 }

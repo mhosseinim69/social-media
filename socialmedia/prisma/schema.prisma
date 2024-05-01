@@ -13,20 +13,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+model User {
   id Int @id @default(autoincrement())
   name String @db.VarChar(100)
   password String @db.VarChar(100)
   username String @unique @db.VarChar(45)
   email String @unique @db.VarChar(45)
+
+  @@map("users")
 }
 
-model Posts {
+model Post {
   id           Int @id @default(autoincrement())
   title        String 
-  description  String 
-  article      Int @unique
-  tags         String? 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  description  String
+  author       Int 
+  article      String? 
+  tags         String?
+  totalViews   Int  
+  comments     Comment[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("posts")
+}
+
+model Comment {
+  id           Int @id @default(autoincrement())
+  user         String 
+  content      String 
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  post         Post   @relation(fields: [postId], references: [id])
+  postId       Int
+
+  @@map("comments")
 }
