@@ -54,7 +54,7 @@ export class CommentsController {
                 text: message,
             };
 
-            // await this.producerService.addToEmailQueue(emailData);
+            await this.producerService.addToEmailQueue(emailData);
 
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
