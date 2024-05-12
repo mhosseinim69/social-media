@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { PostsModule } from './Posts/posts.module';
+import { PostsModule } from '../src/Posts/posts.module';
 import { INestApplication } from '@nestjs/common';
 import { JwtAuthGuard } from "../src/authentication/auth.guard";
 

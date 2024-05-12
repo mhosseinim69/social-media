@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export class Comments implements Prisma.CommentUncheckedCreateInput {
+export class Comment implements Prisma.CommentUncheckedCreateInput {
     user: string
     content: string
     createdAt?: Date
