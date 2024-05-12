@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
 import { CommentsService } from "./comments.service";
 import { UsersService } from "../Users/users.service";
-import { PostsService } from "../Posts/posts.service";
 import { ProducerService } from "../queues/producer.service";
 import { Request, Response } from 'express'
 import { CreateCommentDto } from "./dto/create.comment.dto";
@@ -26,7 +25,6 @@ export class CommentsController {
     constructor(
         private readonly commentService: CommentsService,
         private readonly userService: UsersService,
-        private readonly postService: PostsService,
         private producerService: ProducerService) { }
 
 
@@ -36,6 +34,7 @@ export class CommentsController {
     @ApiBody({
         type: CreateCommentDto,
     })
+
     @Post()
     @UseGuards(JwtAuthGuard)
 
@@ -46,10 +45,7 @@ export class CommentsController {
 
             const newComment = await this.commentService.createComment(createCommentDto, user);
 
-            const authorpost = await this.postService.getPostById(newComment.postId);
-
-            const userEmail = await this.userService.getUserById(authorpost.author);
-
+            const userEmail = await this.userService.getUserById(newComment.post.author);
             const to = userEmail.email
             const message = `Hello ${userEmail.username}, You have a new comment on your post.`;
             const emailData = {
@@ -58,7 +54,7 @@ export class CommentsController {
                 text: message,
             };
 
-            await this.producerService.addToEmailQueue(emailData);
+            // await this.producerService.addToEmailQueue(emailData);
 
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',

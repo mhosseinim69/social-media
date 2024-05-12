@@ -9,13 +9,16 @@ export class CommentsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createComment(data: Comment, user: string): Promise<Comment> {
+    async createComment(data: Comment, user: string): Promise<any> {
         return this.prisma.comment.create({
             data: {
                 content: data.content,
                 postId: data.postId,
                 user,
-            }
+            },
+            include: {
+                post: true,
+            },
         });
     }
 
