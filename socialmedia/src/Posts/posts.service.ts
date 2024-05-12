@@ -1,5 +1,5 @@
 import { PrismaService } from "../prisma.service";
-import { Posts } from "./posts.model";
+import { Post } from "./posts.model";
 import { Injectable } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
 import { PaginationDto } from '../Posts/dto/pagination.dto';
@@ -10,7 +10,7 @@ export class PostsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createPost(data: Posts, author: number, totalViews: number): Promise<Posts> {
+    async createPost(data: Post, author: number, totalViews: number): Promise<Post> {
         return this.prisma.post.create({
             data: {
                 title: data.title,
@@ -24,7 +24,7 @@ export class PostsService {
     }
 
 
-    async updatePost(id: number, data: Posts, author: number, totalViews: number): Promise<Posts> {
+    async updatePost(id: number, data: Post, author: number, totalViews: number): Promise<Post> {
 
         const idToUpdate = Number(id);
 
@@ -42,7 +42,7 @@ export class PostsService {
     }
 
 
-    async getAllPosts(paginationDto: PaginationDto): Promise<Posts[]> {
+    async getAllPosts(paginationDto: PaginationDto): Promise<Post[]> {
 
         const { page = 1, pagesize = 10 } = paginationDto;
         const skip = (page - 1) * pagesize;

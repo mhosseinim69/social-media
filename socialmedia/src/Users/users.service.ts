@@ -1,5 +1,5 @@
 import { PrismaService } from "../prisma.service";
-import { Users } from "./users.model";
+import { User } from "./users.model";
 import { ConflictException, Injectable } from "@nestjs/common";
 
 
@@ -8,12 +8,12 @@ export class UsersService {
 
     constructor(private prisma: PrismaService) { }
 
-    async getAllUsers(): Promise<Users[]> {
+    async getAllUsers(): Promise<User[]> {
         return this.prisma.user.findMany()
     }
 
 
-    async createUser(data: Users): Promise<Users> {
+    async createUser(data: User): Promise<User> {
         const existing = await this.prisma.user.findUnique({
             where: {
                 username: data.username,
@@ -30,7 +30,7 @@ export class UsersService {
     }
 
 
-    async getUserById(id: number): Promise<Users> {
+    async getUserById(id: number): Promise<User> {
         const idToGet = Number(id);
 
         return this.prisma.user.findUnique({

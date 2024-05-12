@@ -1,5 +1,5 @@
 import { PrismaService } from "../prisma.service";
-import { Comments } from "./comments.model";
+import { Comment } from "./comments.model";
 import { Injectable } from "@nestjs/common";
 import { PaginationDto } from '../Comments/dto/pagination.dto';
 
@@ -9,7 +9,7 @@ export class CommentsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createComment(data: Comments, user: string): Promise<Comments> {
+    async createComment(data: Comment, user: string): Promise<Comment> {
         return this.prisma.comment.create({
             data: {
                 content: data.content,
@@ -20,7 +20,7 @@ export class CommentsService {
     }
 
 
-    async updateComment(id: number, data: Comments, user: string): Promise<Comments> {
+    async updateComment(id: number, data: Comment, user: string): Promise<Comment> {
 
         const idToUpdate = Number(id);
 
@@ -35,7 +35,7 @@ export class CommentsService {
     }
 
 
-    async getAllComments(paginationDto: PaginationDto): Promise<Comments[]> {
+    async getAllComments(paginationDto: PaginationDto): Promise<Comment[]> {
 
         const { page = 1, pagesize = 10 } = paginationDto;
         const skip = (page - 1) * pagesize;
@@ -49,7 +49,7 @@ export class CommentsService {
     }
 
 
-    async getCommentById(id: number): Promise<Comments> {
+    async getCommentById(id: number): Promise<Comment> {
         const idToGet = Number(id);
 
         return this.prisma.comment.findUnique({

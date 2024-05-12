@@ -5,7 +5,7 @@ import { UsersService } from "../Users/users.service";
 import { LoginDto } from "./dto/login-user.dto";
 import * as bcrypt from 'bcrypt';
 import { RegisterUsersDto } from "./dto/register-user.dto";
-import { Users } from "../Users/users.model";
+import { User } from "../Users/users.model";
 
 @Injectable()
 export class AuthService {
@@ -41,7 +41,7 @@ export class AuthService {
 
 
     async register(createDto: RegisterUsersDto): Promise<any> {
-        const createUser = new Users();
+        const createUser = new User();
         createUser.name = createDto.name;
         createUser.email = createDto.email;
         createUser.username = createDto.username;
