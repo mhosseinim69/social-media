@@ -11,7 +11,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
         response.status(HttpStatus.NOT_FOUND).json({
             status: HttpStatus.NOT_FOUND,
             message: 'Resource not found',
-            data: null, // You can include additional data in the response if needed
+            data: null,
         });
     }
 }
