@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards, Logger } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request, Response } from 'express'
 import { CreatePostDto } from "./dto/create.post.dto";
@@ -20,8 +20,10 @@ import {
 
 
 export class PostsController {
-    constructor(private readonly postService: PostsService) { }
 
+    private readonly logger = new Logger(PostsController.name);
+
+    constructor(private readonly postService: PostsService) { }
 
     @ApiCreatedResponse({ description: "Post was created" })
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
@@ -38,12 +40,14 @@ export class PostsController {
             const author = request.user['id'];
             const tatalViews = 0
             const newPost = await this.postService.createPost(createPostDto, author, tatalViews);
+            this.logger.log(`Post created successfully by user ${author}`);
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
                 message: 'Post created successfully!',
                 result: newPost
             });
         } catch (err) {
+            this.logger.error(`Error creating post: ${err.message}`);
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 status: 'Error',
                 message: 'Internal Server Error!',
