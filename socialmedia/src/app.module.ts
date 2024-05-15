@@ -5,7 +5,7 @@ import { PostsModule } from './Posts/posts.module';
 import { CommentsModule } from './Comments/comments.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { QueueModule } from './queues/queue.module';
-import { ErrorHandlingMiddleware } from './error/error-handling.middleware';
+import { ErrorHandlingMiddleware } from './errors/error-handling.middleware';
 
 @Module({
   imports: [UsersModule, AuthModule, PostsModule, CommentsModule, QueueModule, MailerModule.forRoot({
