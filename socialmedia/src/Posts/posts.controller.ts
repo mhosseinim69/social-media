@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards, Logger } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards, Logger, BadRequestException } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request, Response } from 'express'
 import { CreatePostDto } from "./dto/create.post.dto";
@@ -31,30 +31,34 @@ export class PostsController {
     @ApiBody({
         type: CreatePostDto,
     })
+
     @Post()
     @UseGuards(JwtAuthGuard)
-
     async createPost(@Body() createPostDto: CreatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
-        try {
 
-            const author = request.user['id'];
-            const tatalViews = 0
-            const newPost = await this.postService.createPost(createPostDto, author, tatalViews);
-            this.logger.log(`Post created successfully by user ${author}`);
-            return response.status(HttpStatus.CREATED).json({
-                status: 'Created!',
-                message: 'Post created successfully!',
-                result: newPost
-            });
-        } catch (err) {
-            this.logger.error(`Error creating post: ${err.message}`);
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        const author = request.user['id'];
+        let tatalViews = 0
+        let newPost = {}
+
+        try {
+            newPost = await this.postService.createPost(createPostDto, author, tatalViews);
+        } catch (e) {
+            if (e instanceof BadRequestException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        this.logger.log(`Post created successfully by user ${author}`);
+
+        return response.status(HttpStatus.CREATED).json({
+            status: 'Created!',
+            message: 'Post created successfully!',
+            result: newPost
+        });
     }
+
+
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Post was updated" })
     @ApiBearerAuth('access-token')
@@ -65,25 +69,28 @@ export class PostsController {
     @Put(':id')
     @UseGuards(JwtAuthGuard)
     async updatePost(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
+
+        const author = request.user['id'];
+        let tatalViews = 0
+        let updatedPost = {}
+
         try {
-            const author = request.user['id'];
-            const tatalViews = 0
             const updatedPost = await this.postService.updatePost(id, updatePostDto, author, tatalViews);
             if (!updatedPost) {
                 throw new NotFoundException(`Post with ID ${id} not found`);
             }
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Post updated successfully!',
-                result: updatedPost
-            });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Post updated successfully!',
+            result: updatedPost
+        });
     }
 
     @Get()
@@ -92,20 +99,23 @@ export class PostsController {
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Get all posts" })
     async getAllPosts(@Req() request: Request, @Res() response: Response, @Query() paginationDto: PaginationDto): Promise<any> {
+
+        let posts = {}
+
         try {
-            const posts = await this.postService.getAllPosts(paginationDto);
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Successfully fetch data!',
-                result: posts
-            })
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Ok!',
-                message: 'Internal Server Error!',
-                error: err.message
-            })
+            posts = await this.postService.getAllPosts(paginationDto);
+        } catch (e) {
+            if (e instanceof BadRequestException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Successfully fetch data!',
+            result: posts
+        })
     }
 
 
@@ -115,21 +125,23 @@ export class PostsController {
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Get post" })
     async getPostById(@Param('id') id: number, @Res() response: Response): Promise<any> {
-        try {
-            const post = await this.postService.getPostById(id);
 
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Successfully fetch post!',
-                result: post
-            });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        let post = {}
+
+        try {
+            post = await this.postService.getPostById(id);
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Successfully fetch post!',
+            result: post
+        });
     }
 
 
@@ -139,22 +151,25 @@ export class PostsController {
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Post was deleted" })
     async deletePost(@Param('id') id: number, @Res() response: Response): Promise<any> {
+
+        let deletedPost = {}
+
         try {
             const deletedPost = await this.postService.deletePost(id);
             if (!deletedPost) {
                 throw new NotFoundException(`Post with ID ${id} not found`);
             }
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Post deleted successfully!',
-                result: deletedPost
-            });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Post deleted successfully!',
+            result: deletedPost
+        });
     }
 }

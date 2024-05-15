@@ -39,7 +39,6 @@ export class AuthService {
     }
 
 
-
     async register(createDto: RegisterUsersDto): Promise<any> {
         const createUser = new User();
         createUser.name = createDto.name;

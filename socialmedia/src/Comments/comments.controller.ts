@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundException, HttpStatus, Put, UseGuards, BadRequestException } from "@nestjs/common";
 import { CommentsService } from "./comments.service";
 import { UsersService } from "../Users/users.service";
 import { ProducerService } from "../queues/producer.service";
@@ -37,11 +37,11 @@ export class CommentsController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
-
     async createComment(@Body() createCommentDto: CreateCommentDto, @Res() response: Response, @Req() request: Request): Promise<any> {
-        try {
 
-            const user = request.user['username'];
+        const user = request.user['username'];
+
+        try {
 
             const newComment = await this.commentService.createComment(createCommentDto, user);
 
@@ -53,7 +53,6 @@ export class CommentsController {
                 subject: 'New Comment Notification',
                 text: message,
             };
-
             await this.producerService.addToEmailQueue(emailData);
 
             return response.status(HttpStatus.CREATED).json({
@@ -61,14 +60,15 @@ export class CommentsController {
                 message: 'Comment created successfully!',
                 result: newComment
             });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        } catch (e) {
+            if (e instanceof BadRequestException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
     }
+
+
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Comment was updated" })
     @ApiBearerAuth('access-token')
@@ -79,25 +79,28 @@ export class CommentsController {
     @Put(':id')
     @UseGuards(JwtAuthGuard)
     async updateComment(@Param('id') id: number, @Body() updateCommentDto: UpdateCommentDto, @Res() response: Response, @Req() request: Request): Promise<any> {
+
+        const user = request.user['username'];
+        let updatedComment = {}
+
         try {
-            const user = request.user['username'];
-            const updatedComment = await this.commentService.updateComment(id, updateCommentDto, user);
+            updatedComment = await this.commentService.updateComment(id, updateCommentDto, user);
             if (!updatedComment) {
                 throw new NotFoundException(`Comment with ID ${id} not found`);
             }
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Post updated successfully!',
-                result: updatedComment
-            });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Post updated successfully!',
+            result: updatedComment
+        });
     }
+
 
     @Get()
     @UseGuards(JwtAuthGuard)
@@ -105,20 +108,23 @@ export class CommentsController {
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Get all comments" })
     async getAllComments(@Req() request: Request, @Res() response: Response, @Query() paginationDto: PaginationDto): Promise<any> {
+
+        let comments = {}
+
         try {
-            const comments = await this.commentService.getAllComments(paginationDto);
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Successfully fetch data!',
-                result: comments
-            })
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Ok!',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+            comments = await this.commentService.getAllComments(paginationDto);
+        } catch (e) {
+            if (e instanceof BadRequestException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Successfully fetch data!',
+            result: comments
+        })
     }
 
 
@@ -128,23 +134,26 @@ export class CommentsController {
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Get comment" })
     async getCommentById(@Param('id') id: number, @Res() response: Response): Promise<any> {
+
+        let comment = {}
+
         try {
-            const comment = await this.commentService.getCommentById(id);
+            comment = await this.commentService.getCommentById(id);
             if (!comment) {
                 throw new NotFoundException(`Comment with ID ${id} not found`);
             }
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Successfully fetch post!',
-                result: comment
-            });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Successfully fetch post!',
+            result: comment
+        });
     }
 
 
@@ -154,22 +163,24 @@ export class CommentsController {
     @ApiUnauthorizedResponse({ description: "invalid credentials" })
     @ApiOkResponse({ description: "Comment was deleted" })
     async deleteComment(@Param('id') id: number, @Res() response: Response): Promise<any> {
+
+        let deletedComment = {}
+
         try {
-            const deletedComment = await this.commentService.deleteComment(id);
+            deletedComment = await this.commentService.deleteComment(id);
             if (!deletedComment) {
                 throw new NotFoundException(`Comment with ID ${id} not found`);
             }
-            return response.status(HttpStatus.OK).json({
-                status: 'Ok!',
-                message: 'Post deleted successfully!',
-                result: deletedComment
-            });
-        } catch (err) {
-            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'Error',
-                message: 'Internal Server Error!',
-                error: err.message
-            });
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                let error = e.getResponse()
+                return response.status(e.getStatus()).json(error);
+            }
         }
+        return response.status(HttpStatus.OK).json({
+            status: 'Ok!',
+            message: 'Post deleted successfully!',
+            result: deletedComment
+        });
     }
 }
