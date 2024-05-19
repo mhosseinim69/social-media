@@ -44,15 +44,15 @@ export class CommentsController {
 
             const newComment = await this.commentService.createComment(createCommentDto, user);
 
-            // const userEmail = await this.userService.getUserById(newComment.post.author);
-            // const to = userEmail.email
-            // const message = `Hello ${userEmail.username}, You have a new comment on your post.`;
-            // const emailData = {
-            //     to,
-            //     subject: 'New Comment Notification',
-            //     text: message,
-            // };
-            // await this.producerService.addToEmailQueue(emailData);
+            const userEmail = await this.userService.getUserById(newComment.post.author);
+            const to = userEmail.email
+            const message = `Hello ${userEmail.username}, You have a new comment on your post.`;
+            const emailData = {
+                to,
+                subject: 'New Comment Notification',
+                text: message,
+            };
+            await this.producerService.addToEmailQueue(emailData);
 
             return response.status(HttpStatus.CREATED).json({
                 status: 'Created!',
