@@ -2,7 +2,6 @@ import { Controller, Get, Post, Delete, Body, Param, Req, Res, Query, NotFoundEx
 import { PostsService } from "./posts.service";
 import { Request, Response } from 'express'
 import { CreatePostDto } from "./dto/create.post.dto";
-import { UpdatePostDto } from "./dto/update.post.dto";
 import { JwtAuthGuard } from "../authentication/auth.guard";
 import { PaginationDto } from '../Posts/dto/pagination.dto';
 import {
@@ -37,11 +36,10 @@ export class PostsController {
     async createPost(@Body() createPostDto: CreatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
 
         const author = request.user['id'];
-        let tatalViews = 0
         let newPost = {}
 
         try {
-            newPost = await this.postService.createPost(createPostDto, author, tatalViews);
+            newPost = await this.postService.createPost(createPostDto, author);
         } catch (e) {
             if (e instanceof BadRequestException) {
                 let error = e.getResponse()
@@ -63,19 +61,18 @@ export class PostsController {
     @ApiOkResponse({ description: "Post was updated" })
     @ApiBearerAuth('access-token')
     @ApiBody({
-        type: UpdatePostDto,
+        type: CreatePostDto,
     })
 
     @Put(':id')
     @UseGuards(JwtAuthGuard)
-    async updatePost(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
+    async updatePost(@Param('id') id: number, @Body() updatePostDto: CreatePostDto, @Res() response: Response, @Req() request: Request): Promise<any> {
 
         const author = request.user['id'];
-        let tatalViews = 0
         let updatedPost = {}
 
         try {
-            const updatedPost = await this.postService.updatePost(id, updatePostDto, author, tatalViews);
+            updatedPost = await this.postService.updatePost(id, updatePostDto, author);
             if (!updatedPost) {
                 throw new NotFoundException(`Post with ID ${id} not found`);
             }

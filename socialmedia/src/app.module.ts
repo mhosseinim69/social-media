@@ -6,9 +6,16 @@ import { CommentsModule } from './Comments/comments.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { QueueModule } from './queues/queue.module';
 import { ErrorHandlingMiddleware } from './errors/error-handling.middleware';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
+
 
 @Module({
-  imports: [UsersModule, AuthModule, PostsModule, CommentsModule, QueueModule, MailerModule.forRoot({
+  imports: [GraphQLModule.forRoot<ApolloDriverConfig>({
+    driver: ApolloDriver,
+    autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+  }), UsersModule, AuthModule, PostsModule, CommentsModule, QueueModule, MailerModule.forRoot({
     transport: {
       host: process.env.EMAIL_HOST,
       port: 587,

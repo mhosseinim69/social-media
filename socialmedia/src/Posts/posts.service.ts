@@ -3,14 +3,14 @@ import { Post } from "./posts.model";
 import { Injectable } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
 import { PaginationDto } from '../Posts/dto/pagination.dto';
-
+import { CreatePostDto } from './dto/create.post.dto';
 
 @Injectable()
 export class PostsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createPost(data: Post, author: number, totalViews: number): Promise<Post> {
+    async createPost(data: CreatePostDto, author: number): Promise<Post> {
         return this.prisma.post.create({
             data: {
                 title: data.title,
@@ -18,13 +18,13 @@ export class PostsService {
                 author,
                 tags: data.tags,
                 article: data.article,
-                totalViews,
+                totalViews: 0,
             }
         });
     }
 
 
-    async updatePost(id: number, data: Post, author: number, totalViews: number): Promise<Post> {
+    async updatePost(id: number, data: CreatePostDto, author: number): Promise<Post> {
 
         const idToUpdate = Number(id);
 
@@ -36,7 +36,6 @@ export class PostsService {
                 author,
                 tags: data.tags,
                 article: data.article,
-                totalViews,
             }
         });
     }

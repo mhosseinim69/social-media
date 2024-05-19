@@ -1,0 +1,43 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Post {
+  id: Int!
+  title: String!
+  description: String!
+  author: Int!
+  article: String
+  tags: String
+  totalViews: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  getPosts(paginationDto: PaginationDto): [Post!]!
+  getPostById(id: Int!): Post!
+}
+
+input PaginationDto {
+  page: Int
+  pagesize: Int
+}
+
+type Mutation {
+  createPost(createPostDto: CreatePostDto!, author: Int!): Post!
+  updatePost(id: Int!, updatePostDto: CreatePostDto!, author: Int!): Post!
+  deletePost(id: Int!): Post!
+}
+
+input CreatePostDto {
+  title: String!
+  description: String!
+  tags: String
+  article: String
+}
