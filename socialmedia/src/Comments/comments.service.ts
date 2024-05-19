@@ -2,14 +2,14 @@ import { PrismaService } from "../prisma.service";
 import { Comment } from "./comments.model";
 import { Injectable } from "@nestjs/common";
 import { PaginationDto } from '../Comments/dto/pagination.dto';
-
+import { CreateCommentDto } from "./dto/create.comment.dto";
 
 @Injectable()
 export class CommentsService {
 
     constructor(private prisma: PrismaService) { }
 
-    async createComment(data: Comment, user: string): Promise<any> {
+    async createComment(data: CreateCommentDto, user: string): Promise<any> {
         return this.prisma.comment.create({
             data: {
                 content: data.content,
@@ -23,7 +23,7 @@ export class CommentsService {
     }
 
 
-    async updateComment(id: number, data: Comment, user: string): Promise<Comment> {
+    async updateComment(id: number, data: CreateCommentDto, user: string): Promise<Comment> {
 
         const idToUpdate = Number(id);
 

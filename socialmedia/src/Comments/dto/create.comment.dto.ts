@@ -18,7 +18,4 @@ export class CreateCommentDto {
     })
     @IsString()
     postId: number;
-
-    user: string;
-
 }
